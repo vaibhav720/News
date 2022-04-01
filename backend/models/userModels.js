@@ -40,27 +40,39 @@ const userSchema = new mongoose.Schema({
     CompleteAddress: {
         city: {
           type: String,
-          required: true,
+          required: [true,"Plz enter city"],
         },
     
         state: {
           type: String,
-          required: true,
+          required: [true,"Plz enter state"],
         },
     
         country: {
           type: String,
-          required: true,
+          required: [true,"Plz Enter country"],
         },
         pinCode: {
           type: Number,
-          required: true,
+          required: [true,"Enter pin code"],
         },
         phoneNo: {
           type: Number,
-          required: true,
+          required: [true,"Enter phone number"],
         },
       },
+      language:{
+        type:String,
+        required:[true,"Enter language"]
+      },
+      topics:[{
+        name:{
+          type:String,
+        },
+        publishedDate:{
+          type:Date,
+        }
+      }],
     
     resetPasswordToken: String,
     resetPasswordExpire: Date,
