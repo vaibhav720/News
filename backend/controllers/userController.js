@@ -4,6 +4,10 @@ const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const sendToken = require("../utils/jwtToken");
 const sendEmail = require("../utils/sendEmail.js");
 const crypto = require("crypto");
+const NewsAPI = require('newsapi');
+const { response } = require("../app");
+const newsApi = new NewsAPI('d575bab0828a4044bed1a0e5d5e14b81');
+
 // Register a User
 
 
@@ -233,4 +237,97 @@ exports.deleteUser = catchAsyncErrors(async(req,res,next)=>{
         success:true,
         message:"User Deleted successfully"
     })
-})
+});
+
+//    News Topics
+
+
+exports.personalNews = catchAsyncErrors(async(req,res,next)=>{
+    let ans=[];
+    const user = await User.findById(req.user.id);
+    await user.topics.forEach(async(item,index)=>{
+        await newsApi.v2.everything({
+            q: item.name,
+            sources: 'bbc-news'
+          }, {
+            noCache: true
+          }).then(async response => {
+              let count =0;
+            await response.articles.forEach(async(items,index)=>{
+                if(count<2)
+                {
+                    await ans.push(items);
+                }
+                count++;
+            })
+            console.log(ans)
+          });
+        
+    });
+        console.log(user);
+      await res.status(200).json({
+        success:true,
+        message:ans
+    });
+});
+
+//    News Topics
+
+
+exports.trending = catchAsyncErrors(async(req,res,next)=>{
+    let ans=[]
+    await newsApi.v2.topHeadlines({
+        language: 'en',
+        country: 'in'
+      }, {
+        noCache: true
+      }).then(response => {
+          
+            console.log(response.articles[0]);
+            ans.push(...response.articles);
+        
+      });
+      console.log(ans);
+      res.status(200).json({
+        success:true,
+        message:ans
+    })
+});
+
+exports.newTopics = catchAsyncErrors(async(req,res,next)=>{
+    const user = await User.findById(req.user.id);
+    //console.log(req.body);
+    user.topics.push(req.body);
+
+    const newUser = await User.findByIdAndUpdate(req.user.id,user,{
+        new:true,
+        runValidators:true,
+        useFindAndModify: false
+    });
+    let ans=[];
+    let co=0;
+    await user.topics.forEach(async(item,index)=>{
+        if(co<5){
+            console.log(item.name);
+        await newsApi.v2.everything({
+            q: item.name,
+            sources: 'bbc-news'
+          }, {
+            noCache: true
+          }).then(response => {
+            ans.push(...response.articles);
+            console.log(ans)
+         });
+        }
+        else{
+            
+        }
+        co++;
+    })
+    
+      res.status(200).json({
+        success:true,
+        message:ans
+    })
+});
+

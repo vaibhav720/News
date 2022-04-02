@@ -27,6 +27,7 @@
     "express": "^4.17.3",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.2.9",
+    "newsapi": "^2.4.1",
     "nodemailer": "^6.7.3",
     "nodemon": "^2.0.15",
     "overlay-navbar": "^1.2.3",
