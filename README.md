@@ -1,5 +1,5 @@
-# News
+# Personal News
 
-### npm init
+Tech used: MongoDB, Javascript, React.js, 
 
-### npm run
+
